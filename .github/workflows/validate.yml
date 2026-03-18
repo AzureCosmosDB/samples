@@ -6,12 +6,17 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-structure:
     name: Validate Sample Structure
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -35,8 +40,6 @@ jobs:
   validate-python:
     name: Validate Python Samples
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     strategy:
       fail-fast: false
     steps:
@@ -62,8 +65,6 @@ jobs:
   validate-javascript:
     name: Validate JavaScript/TypeScript Samples
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     strategy:
       fail-fast: false
     steps:
@@ -85,8 +86,6 @@ jobs:
   validate-java:
     name: Validate Java Samples
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     strategy:
       fail-fast: false
     steps:
@@ -111,8 +110,6 @@ jobs:
   validate-dotnet:
     name: Validate .NET Samples
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     strategy:
       fail-fast: false
     steps:
@@ -133,8 +130,6 @@ jobs:
   validate-go:
     name: Validate Go Samples
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     strategy:
       fail-fast: false
     steps:
