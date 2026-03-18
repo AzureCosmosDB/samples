@@ -1,8 +1,7 @@
-#:package Azure.Identity@1.13.2
-#:package Microsoft.Azure.Cosmos@3.*
-#:package Newtonsoft.Json@13.*
-#:package Microsoft.Extensions.Configuration.UserSecrets@10.*
-#:property UserSecretsId=azurecosmosdb-samples-dotnet-001-connect-passwordless
+#:package Azure.Identity
+#:package Microsoft.Azure.Cosmos
+#:package Newtonsoft.Json
+#:package Microsoft.Extensions.Configuration.UserSecrets
 
 using Azure.Identity;
 using Microsoft.Azure.Cosmos;
