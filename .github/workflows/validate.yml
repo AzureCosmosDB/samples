@@ -133,10 +133,10 @@ jobs:
         for sample in dotnet/*/; do
           proj=$(find "$sample" -maxdepth 2 \( -name '*.sln' -o -name '*.csproj' \) | head -1)
           if [ -n "$proj" ]; then
-            dotnet build "$proj" --configuration Release -q
+            dotnet build "$proj" --configuration Release
           else
             cs=$(find "$sample" -maxdepth 2 -name '*.cs' | head -1)
-            [ -n "$cs" ] && dotnet build "$cs" --configuration Release -q
+            [ -n "$cs" ] && dotnet build "$cs" --configuration Release
           fi
         done
 
