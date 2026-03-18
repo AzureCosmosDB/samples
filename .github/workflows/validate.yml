@@ -30,8 +30,8 @@ jobs:
               echo "::error::$name does not follow NNN-kebab-case naming"
               exit 1
             fi
-            if [ ! -f "${sample}readme.md" ]; then
-              echo "::error::$name is missing readme.md"
+            if [ ! -f "${sample}README.md" ]; then
+              echo "::error::$name is missing README.md"
               exit 1
             fi
           done
