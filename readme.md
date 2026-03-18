@@ -1,6 +1,6 @@
 # Azure Cosmos DB samples
 
-One stop repo for all Cosmos DB samples.
+One stop repo for all Azure Cosmos DB samples.
 
 ## Overview
 
