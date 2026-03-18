@@ -24,32 +24,28 @@ az cosmosdb sql role assignment create \
   --scope "/"
 ```
 
-### 2. Set the environment variable
+## Run
+
+> [!IMPORTANT]
+> The environment variable below is set **only for the current terminal session** and does **not persist** after you close the window.
+
+### macOS / Linux
 
 ```bash
-# Linux / macOS
 export COSMOS_ENDPOINT="https://<your-account>.documents.azure.com:443/"
-
-# Windows (Command Prompt)
-set COSMOS_ENDPOINT=https://<your-account>.documents.azure.com:443/
-
-# Windows (PowerShell)
-$env:COSMOS_ENDPOINT = "https://<your-account>.documents.azure.com:443/"
+az login
+dotnet run Program.cs
 ```
 
-### 3. Log in with Azure CLI (local development)
+### Windows (PowerShell)
 
-```bash
+```powershell
+$Env:COSMOS_ENDPOINT="https://<your-account>.documents.azure.com:443/"
 az login
+dotnet run Program.cs
 ```
 
 `DefaultAzureCredential` automatically uses your Azure CLI login locally. In production (Azure App Service, Azure Functions, Azure Container Apps, etc.) it uses the managed identity assigned to the resource — no code changes needed.
-
-## Run
-
-```bash
-dotnet run Program.cs
-```
 
 ## What this sample does
 

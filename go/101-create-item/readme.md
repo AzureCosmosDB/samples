@@ -8,37 +8,28 @@ This sample demonstrates the four fundamental **CRUD** operations (Create, Read,
 - An Azure Cosmos DB for NoSQL account
 - [Go 1.21+](https://go.dev/dl/)
 
-## Setup
+## Run
 
-### Set environment variables
+> [!IMPORTANT]
+> These environment variables are set **only for the current terminal session** and do **not persist** after you close the window.
+
+### macOS / Linux
 
 ```bash
-# Linux / macOS
 export COSMOS_ENDPOINT="https://<your-account>.documents.azure.com:443/"
-export COSMOS_KEY="<your-cosmos-db-primary-key>"
+export COSMOS_KEY="<your-primary-key>"
+go run main.go
+```
 
-# Windows (Command Prompt)
-set COSMOS_ENDPOINT=https://<your-account>.documents.azure.com:443/
-set COSMOS_KEY=<your-cosmos-db-primary-key>
+### Windows (PowerShell)
 
-# Windows (PowerShell)
-$env:COSMOS_ENDPOINT = "https://<your-account>.documents.azure.com:443/"
-$env:COSMOS_KEY = "<your-cosmos-db-primary-key>"
+```powershell
+$Env:COSMOS_ENDPOINT="https://<your-account>.documents.azure.com:443/"
+$Env:COSMOS_KEY="<your-primary-key>"
+go run main.go
 ```
 
 You can find your endpoint and primary key in the Azure portal under your Cosmos DB account → **Keys**.
-
-### Install dependencies
-
-```bash
-go mod tidy
-```
-
-## Run
-
-```bash
-go run main.go
-```
 
 ## Operations demonstrated
 
