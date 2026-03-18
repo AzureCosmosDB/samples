@@ -29,7 +29,7 @@ az cosmosdb sql role assignment create \
 ### 1. Set your endpoint using user secrets
 
 ```shell
-dotnet user-secrets set --file Program.cs "COSMOS_ENDPOINT" "https://<your-account>.documents.azure.com:443/"
+dotnet user-secrets set --file connect.cs "COSMOS_ENDPOINT" "https://<your-account>.documents.azure.com:443/"
 ```
 
 ### 2. Log in with Azure CLI
@@ -41,7 +41,7 @@ az login
 ### 3. Run the sample
 
 ```shell
-dotnet run Program.cs
+dotnet run connect.cs
 ```
 
 `DefaultAzureCredential` automatically uses your Azure CLI login locally. In production (Azure App Service, Azure Functions, Azure Container Apps, etc.) it uses the managed identity assigned to the resource — no code changes needed.
