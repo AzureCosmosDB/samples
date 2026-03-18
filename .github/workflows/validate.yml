@@ -12,6 +12,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# Minimal read-only permissions for the GITHUB_TOKEN (principle of least privilege).
+# No job writes to the repository or packages.
+permissions:
+  contents: read
+
 defaults:
   run:
     shell: bash
