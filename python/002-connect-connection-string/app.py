@@ -12,6 +12,5 @@ if not key:
 
 client = CosmosClient(url=endpoint, credential=key)
 
-databases = list(client.list_databases())
-for database in databases:
-    print(f"Database: {database['id']}")
+account = client.get_database_account()
+print(f"Account: {account['id']}")

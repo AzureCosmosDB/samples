@@ -50,4 +50,4 @@ dotnet run connect.cs
 
 1. Reads `COSMOS_ENDPOINT` from user secrets (via `Microsoft.Extensions.Configuration.UserSecrets`)
 2. Authenticates using `DefaultAzureCredential` (Azure CLI / Managed Identity / etc.)
-3. Lists all databases in the account and prints their names
+3. Reads account metadata and prints the account name

@@ -35,4 +35,4 @@ You can find your endpoint and primary key in the Azure portal under your Cosmos
 
 1. Reads `COSMOS_ENDPOINT` and `COSMOS_KEY` from the environment
 2. Creates a `CosmosClient` using the endpoint and key
-3. Lists all databases in the account and prints their names
+3. Reads account metadata and prints the account name

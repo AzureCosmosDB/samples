@@ -17,12 +17,5 @@ string endpoint = configuration["COSMOS_ENDPOINT"]
 var credential = new DefaultAzureCredential();
 var client = new CosmosClient(endpoint, credential);
 
-using FeedIterator<DatabaseProperties> iterator = client.GetDatabaseQueryIterator<DatabaseProperties>();
-while (iterator.HasMoreResults)
-{
-    FeedResponse<DatabaseProperties> databases = await iterator.ReadNextAsync();
-    foreach (DatabaseProperties db in databases)
-    {
-        Console.WriteLine($"Database: {db.Id}");
-    }
-}
+AccountProperties account = await client.ReadAccountAsync();
+Console.WriteLine($"Account: {account.Id}");
