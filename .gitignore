@@ -1,0 +1,27 @@
+# .NET build artifacts
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Environment variables
+.env
+
+# Go
+# (go.sum should be committed)
+
+# macOS
+.DS_Store
+
+# JetBrains
+.idea/
