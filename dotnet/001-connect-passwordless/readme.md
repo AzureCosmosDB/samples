@@ -13,13 +13,13 @@ This sample demonstrates how to authenticate to Azure Cosmos DB for NoSQL using 
 
 ### 1. Assign the required role
 
-Grant your Azure AD identity the **Cosmos DB Built-in Data Contributor** role on your Cosmos DB account:
+Grant your Azure AD identity the **Cosmos DB Built-in Data Reader** role on your Cosmos DB account:
 
 ```bash
 az cosmosdb sql role assignment create \
   --account-name <cosmos-account-name> \
   --resource-group <resource-group> \
-  --role-definition-name "Cosmos DB Built-in Data Contributor" \
+  --role-definition-name "Cosmos DB Built-in Data Reader" \
   --principal-id $(az ad signed-in-user show --query id -o tsv) \
   --scope "/"
 ```
@@ -50,7 +50,4 @@ dotnet run connect.cs
 
 1. Reads `COSMOS_ENDPOINT` from user secrets (via `Microsoft.Extensions.Configuration.UserSecrets`)
 2. Authenticates using `DefaultAzureCredential` (Azure CLI / Managed Identity / etc.)
-3. Creates (or retrieves) a database named `cosmicworks`
-4. Creates (or retrieves) a container named `products` with partition key `/category`
-5. Creates a product item
-6. Reads the item back and prints its details
+3. Lists all databases in the account and prints their names

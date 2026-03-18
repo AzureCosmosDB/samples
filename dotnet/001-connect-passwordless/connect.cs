@@ -1,6 +1,5 @@
 #:package Azure.Identity@1.13.2
 #:package Microsoft.Azure.Cosmos@3.*
-#:package Newtonsoft.Json@13.*
 #:package Microsoft.Extensions.Configuration.UserSecrets@10.*
 #:property UserSecretsId=azurecosmosdb-samples-dotnet-001-connect-passwordless
 
@@ -18,27 +17,12 @@ string endpoint = configuration["COSMOS_ENDPOINT"]
 var credential = new DefaultAzureCredential();
 var client = new CosmosClient(endpoint, credential);
 
-Database database = await client.CreateDatabaseIfNotExistsAsync("cosmicworks");
-Console.WriteLine($"Created/retrieved database: {database.Id}");
-
-Container container = await database.CreateContainerIfNotExistsAsync("products", "/category");
-Console.WriteLine($"Created/retrieved container: {container.Id}");
-
-Product newItem = new(
-    id: "70b63682-b93a-4c77-aad2-65501347265f",
-    category: "gear-surf-surfboards",
-    name: "Yamba Surfboard",
-    quantity: 12,
-    sale: false
-);
-
-ItemResponse<Product> createResponse = await container.UpsertItemAsync(newItem, new PartitionKey(newItem.category));
-Console.WriteLine($"Upserted item: {createResponse.Resource.id} (status: {createResponse.StatusCode})");
-
-ItemResponse<Product> readResponse = await container.ReadItemAsync<Product>(
-    newItem.id,
-    new PartitionKey(newItem.category)
-);
-Console.WriteLine($"Read item: {readResponse.Resource.name} | Quantity: {readResponse.Resource.quantity}");
-
-record Product(string id, string category, string name, int quantity, bool sale);
+using FeedIterator<DatabaseProperties> iterator = client.GetDatabaseQueryIterator<DatabaseProperties>();
+while (iterator.HasMoreResults)
+{
+    FeedResponse<DatabaseProperties> databases = await iterator.ReadNextAsync();
+    foreach (DatabaseProperties db in databases)
+    {
+        Console.WriteLine($"Database: {db.Id}");
+    }
+}
