@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Validate naming and README presence
       run: |
         for dir in python javascript java dotnet go; do
@@ -30,8 +30,8 @@ jobs:
               echo "::error::$name does not follow NNN-kebab-case naming"
               exit 1
             fi
-            if [ ! -f "${sample}README.md" ]; then
-              echo "::error::$name is missing README.md"
+            if [ ! -f "${sample}readme.md" ]; then
+              echo "::error::$name is missing readme.md"
               exit 1
             fi
           done
@@ -44,7 +44,7 @@ jobs:
       fail-fast: false
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -69,7 +69,7 @@ jobs:
       fail-fast: false
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
@@ -90,7 +90,7 @@ jobs:
       fail-fast: false
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Set up Java
       uses: actions/setup-java@v4
       with:
@@ -114,7 +114,7 @@ jobs:
       fail-fast: false
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Set up .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -134,7 +134,7 @@ jobs:
       fail-fast: false
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
