@@ -6,7 +6,7 @@ This sample demonstrates how to authenticate to Azure Cosmos DB for NoSQL using 
 
 - An [Azure subscription](https://azure.microsoft.com/free/)
 - An Azure Cosmos DB for NoSQL account
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) (for local development login)
 
 ## Setup
@@ -48,7 +48,7 @@ az login
 ## Run
 
 ```bash
-dotnet run
+dotnet run Program.cs
 ```
 
 ## What this sample does

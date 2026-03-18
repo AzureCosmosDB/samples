@@ -1,3 +1,6 @@
+#:package Azure.Identity@1.13.2
+#:package Microsoft.Azure.Cosmos@3.47.0
+
 using Azure.Identity;
 using Microsoft.Azure.Cosmos;
 
