@@ -1,0 +1,388 @@
+name: Validate Samples
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # ─────────────────────────────────────────────
+  # Structure validation (runs on every PR/push)
+  # ─────────────────────────────────────────────
+  validate-structure:
+    name: Validate Sample Structure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate sample directory naming and README presence
+        run: |
+          set -euo pipefail
+          errors=0
+
+          # Pattern: exactly 3 digits, a hyphen, then kebab-case name
+          NAMING_RE='^[0-9]{3}-[a-z0-9]+(-[a-z0-9]+)*$'
+
+          for lang_dir in python javascript java dotnet go; do
+            [ -d "$lang_dir" ] || continue
+
+            while IFS= read -r -d '' sample; do
+              name="$(basename "$sample")"
+
+              # Skip hidden directories
+              [[ "$name" == .* ]] && continue
+
+              if ! echo "$name" | grep -qP "$NAMING_RE"; then
+                echo "::error file=$sample::Directory '$name' does not follow the NNN-kebab-case-name convention."
+                errors=$((errors + 1))
+              fi
+
+              if [ ! -f "$sample/README.md" ]; then
+                echo "::error file=$sample::Sample directory '$name' is missing a README.md file."
+                errors=$((errors + 1))
+              fi
+            done < <(find "$lang_dir" -mindepth 1 -maxdepth 1 -type d -print0 | sort -z)
+          done
+
+          if [ "$errors" -gt 0 ]; then
+            echo "::error::Structure validation failed with $errors error(s)."
+            exit 1
+          fi
+
+          echo "✅ All sample directories pass structure validation."
+
+  # ─────────────────────────────────────────────
+  # Python
+  # ─────────────────────────────────────────────
+  validate-python:
+    name: Validate Python Samples
+    runs-on: ubuntu-latest
+    # Always run on push to main; on PRs the paths-filter step gates the actual work
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect changed Python files
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            python:
+              - 'python/**'
+
+      - name: Set up Python
+        if: steps.changes.outputs.python == 'true' || github.event_name == 'push'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate and test Python samples
+        if: steps.changes.outputs.python == 'true' || github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          [ -d python ] || { echo "No python directory found — skipping."; exit 0; }
+
+          errors=0
+
+          while IFS= read -r -d '' sample; do
+            name="$(basename "$sample")"
+            echo "──────────────────────────────"
+            echo "▶ Validating Python sample: $name"
+
+            # Require a dependency manifest
+            if [ ! -f "$sample/requirements.txt" ] && [ ! -f "$sample/pyproject.toml" ]; then
+              echo "::warning file=$sample::No requirements.txt or pyproject.toml found in $name."
+            fi
+
+            # Install dependencies
+            if [ -f "$sample/requirements.txt" ]; then
+              pip install --quiet -r "$sample/requirements.txt" || {
+                echo "::error file=$sample/requirements.txt::pip install failed for $name"
+                errors=$((errors + 1))
+                continue
+              }
+            elif [ -f "$sample/pyproject.toml" ]; then
+              pip install --quiet "$sample" || {
+                echo "::error file=$sample/pyproject.toml::pip install failed for $name"
+                errors=$((errors + 1))
+                continue
+              }
+            fi
+
+            # Run pytest if tests exist, otherwise syntax-check all .py files
+            if find "$sample" -name 'test_*.py' -o -name '*_test.py' | grep -q .; then
+              python -m pytest "$sample" -v || {
+                echo "::error::pytest failed for $name"
+                errors=$((errors + 1))
+              }
+            else
+              echo "No tests found — running syntax check on all .py files."
+              while IFS= read -r -d '' pyfile; do
+                python -m py_compile "$pyfile" || {
+                  echo "::error file=$pyfile::Syntax error in $pyfile"
+                  errors=$((errors + 1))
+                }
+              done < <(find "$sample" -name '*.py' -print0)
+            fi
+          done < <(find python -mindepth 1 -maxdepth 1 -type d -print0 | sort -z)
+
+          [ "$errors" -eq 0 ] || { echo "::error::Python validation failed with $errors error(s)."; exit 1; }
+          echo "✅ All Python samples validated."
+
+  # ─────────────────────────────────────────────
+  # JavaScript / TypeScript
+  # ─────────────────────────────────────────────
+  validate-javascript:
+    name: Validate JavaScript/TypeScript Samples
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect changed JavaScript files
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            javascript:
+              - 'javascript/**'
+
+      - name: Set up Node.js
+        if: steps.changes.outputs.javascript == 'true' || github.event_name == 'push'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate and test JavaScript/TypeScript samples
+        if: steps.changes.outputs.javascript == 'true' || github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          [ -d javascript ] || { echo "No javascript directory found — skipping."; exit 0; }
+
+          errors=0
+
+          while IFS= read -r -d '' sample; do
+            name="$(basename "$sample")"
+            echo "──────────────────────────────"
+            echo "▶ Validating JS/TS sample: $name"
+
+            if [ ! -f "$sample/package.json" ]; then
+              echo "::warning file=$sample::No package.json found in $name."
+              continue
+            fi
+
+            npm install --prefix "$sample" --silent || {
+              echo "::error file=$sample/package.json::npm install failed for $name"
+              errors=$((errors + 1))
+              continue
+            }
+
+            # Run tests if a test script is defined
+            if node -e "const p=require('./$sample/package.json'); process.exit(p.scripts&&p.scripts.test?0:1)" 2>/dev/null; then
+              npm test --prefix "$sample" || {
+                echo "::error::npm test failed for $name"
+                errors=$((errors + 1))
+              }
+            else
+              echo "No test script defined in package.json — skipping tests for $name."
+            fi
+          done < <(find javascript -mindepth 1 -maxdepth 1 -type d -print0 | sort -z)
+
+          [ "$errors" -eq 0 ] || { echo "::error::JavaScript validation failed with $errors error(s)."; exit 1; }
+          echo "✅ All JavaScript/TypeScript samples validated."
+
+  # ─────────────────────────────────────────────
+  # Java
+  # ─────────────────────────────────────────────
+  validate-java:
+    name: Validate Java Samples
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect changed Java files
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            java:
+              - 'java/**'
+
+      - name: Set up Java
+        if: steps.changes.outputs.java == 'true' || github.event_name == 'push'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle cache
+        if: steps.changes.outputs.java == 'true' || github.event_name == 'push'
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Validate and test Java samples
+        if: steps.changes.outputs.java == 'true' || github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          [ -d java ] || { echo "No java directory found — skipping."; exit 0; }
+
+          errors=0
+
+          while IFS= read -r -d '' sample; do
+            name="$(basename "$sample")"
+            echo "──────────────────────────────"
+            echo "▶ Validating Java sample: $name"
+
+            if [ -f "$sample/pom.xml" ]; then
+              mvn --batch-mode --no-transfer-progress test -f "$sample/pom.xml" || {
+                echo "::error file=$sample/pom.xml::mvn test failed for $name"
+                errors=$((errors + 1))
+              }
+            elif [ -f "$sample/build.gradle" ] || [ -f "$sample/build.gradle.kts" ]; then
+              (cd "$sample" && gradle test --no-daemon --console=plain) || {
+                echo "::error::gradle test failed for $name"
+                errors=$((errors + 1))
+              }
+            else
+              echo "::warning file=$sample::No pom.xml or build.gradle found in $name."
+            fi
+          done < <(find java -mindepth 1 -maxdepth 1 -type d -print0 | sort -z)
+
+          [ "$errors" -eq 0 ] || { echo "::error::Java validation failed with $errors error(s)."; exit 1; }
+          echo "✅ All Java samples validated."
+
+  # ─────────────────────────────────────────────
+  # .NET
+  # ─────────────────────────────────────────────
+  validate-dotnet:
+    name: Validate .NET Samples
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect changed .NET files
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            dotnet:
+              - 'dotnet/**'
+
+      - name: Set up .NET
+        if: steps.changes.outputs.dotnet == 'true' || github.event_name == 'push'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: Validate and build .NET samples
+        if: steps.changes.outputs.dotnet == 'true' || github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          [ -d dotnet ] || { echo "No dotnet directory found — skipping."; exit 0; }
+
+          errors=0
+
+          while IFS= read -r -d '' sample; do
+            name="$(basename "$sample")"
+            echo "──────────────────────────────"
+            echo "▶ Validating .NET sample: $name"
+
+            # Find the solution or project file (prefer .sln if present)
+            proj=""
+            if find "$sample" -maxdepth 1 -name '*.sln' | grep -q .; then
+              proj="$(find "$sample" -maxdepth 1 -name '*.sln' | head -1)"
+            elif find "$sample" -maxdepth 2 -name '*.csproj' | grep -q .; then
+              proj="$(find "$sample" -maxdepth 2 -name '*.csproj' | head -1)"
+            fi
+
+            if [ -z "$proj" ]; then
+              echo "::warning file=$sample::No *.sln or *.csproj found in $name."
+              continue
+            fi
+
+            dotnet restore "$proj" || {
+              echo "::error file=$proj::dotnet restore failed for $name"
+              errors=$((errors + 1))
+              continue
+            }
+
+            dotnet build "$proj" --no-restore --configuration Release || {
+              echo "::error file=$proj::dotnet build failed for $name"
+              errors=$((errors + 1))
+            }
+          done < <(find dotnet -mindepth 1 -maxdepth 1 -type d -print0 | sort -z)
+
+          [ "$errors" -eq 0 ] || { echo "::error::.NET validation failed with $errors error(s)."; exit 1; }
+          echo "✅ All .NET samples validated."
+
+  # ─────────────────────────────────────────────
+  # Go
+  # ─────────────────────────────────────────────
+  validate-go:
+    name: Validate Go Samples
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect changed Go files
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            go:
+              - 'go/**'
+
+      - name: Set up Go
+        if: steps.changes.outputs.go == 'true' || github.event_name == 'push'
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache-dependency-path: '**/go.sum'
+
+      - name: Validate and test Go samples
+        if: steps.changes.outputs.go == 'true' || github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          [ -d go ] || { echo "No go directory found — skipping."; exit 0; }
+
+          errors=0
+
+          while IFS= read -r -d '' sample; do
+            name="$(basename "$sample")"
+            echo "──────────────────────────────"
+            echo "▶ Validating Go sample: $name"
+
+            if [ ! -f "$sample/go.mod" ]; then
+              echo "::warning file=$sample::No go.mod found in $name."
+              continue
+            fi
+
+            (cd "$sample" && go build ./...) || {
+              echo "::error::go build failed for $name"
+              errors=$((errors + 1))
+              continue
+            }
+
+            (cd "$sample" && go test ./...) || {
+              echo "::error::go test failed for $name"
+              errors=$((errors + 1))
+            }
+          done < <(find go -mindepth 1 -maxdepth 1 -type d -print0 | sort -z)
+
+          [ "$errors" -eq 0 ] || { echo "::error::Go validation failed with $errors error(s)."; exit 1; }
+          echo "✅ All Go samples validated."
