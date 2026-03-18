@@ -43,7 +43,7 @@ GitHub Rulesets are the modern replacement for classic Branch Protection Rules a
    | **Require a pull request before merging** | ✅ Enable |
    | ↳ Required approvals | `1` (increase to `2` for higher-risk repos) |
    | ↳ Dismiss stale pull request approvals when new commits are pushed | ✅ Enable |
-   | ↳ Require review from Code Owners | ✅ Enable (add a `CODEOWNERS` file per language subfolder) |
+   | ↳ Require review from Code Owners | ✅ Enable (add a single `.github/CODEOWNERS` file with patterns for each language directory — see §4) |
    | ↳ Require approval of the most recent reviewable push | ✅ Enable |
    | **Require status checks to pass** | ✅ Enable |
    | ↳ Require branches to be up to date before merging | ✅ Enable |

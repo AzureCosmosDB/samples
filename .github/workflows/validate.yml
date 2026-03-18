@@ -128,7 +128,7 @@ jobs:
             fi
 
             # Run pytest if tests exist, otherwise syntax-check all .py files
-            if find "$sample" -name 'test_*.py' -o -name '*_test.py' | grep -q .; then
+            if find "$sample" \( -name 'test_*.py' -o -name '*_test.py' \) -print | grep -q .; then
               python -m pytest "$sample" -v || {
                 echo "::error::pytest failed for $name"
                 errors=$((errors + 1))
