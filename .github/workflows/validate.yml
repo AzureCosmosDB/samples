@@ -30,7 +30,7 @@ jobs:
               echo "::error::$name does not follow NNN-kebab-case naming"
               exit 1
             fi
-            if [ ! -f "${sample}readme.md" ]; then
+            if ! find "${sample}" -maxdepth 1 -iname "readme.md" | grep -q .; then
               echo "::error::$name is missing readme.md"
               exit 1
             fi
@@ -46,7 +46,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v6
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: '3.12'
     - name: Install dependencies
@@ -71,7 +71,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v6
     - name: Set up Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version: '20'
     - name: Install and test
@@ -92,7 +92,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v6
     - name: Set up Java
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: microsoft
         java-version: '21'
@@ -116,7 +116,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v6
     - name: Set up .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '9.0'
     - name: Build
@@ -136,7 +136,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v6
     - name: Set up Go
-      uses: actions/setup-go@v5
+      uses: actions/setup-go@v6
       with:
         go-version: '1.22'
     - name: Build and test
