@@ -1,0 +1,61 @@
+# Connect to Azure Cosmos DB for NoSQL — Passwordless (.NET)
+
+This sample demonstrates how to authenticate to Azure Cosmos DB for NoSQL using **passwordless authentication** via `DefaultAzureCredential` from the Azure Identity library. No connection strings or keys are required.
+
+## Prerequisites
+
+- An [Azure subscription](https://azure.microsoft.com/free/)
+- An Azure Cosmos DB for NoSQL account
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) (for local development login)
+
+## Setup
+
+### 1. Assign the required role
+
+Grant your Azure AD identity the **Cosmos DB Built-in Data Contributor** role on your Cosmos DB account:
+
+```bash
+az cosmosdb sql role assignment create \
+  --account-name <cosmos-account-name> \
+  --resource-group <resource-group> \
+  --role-definition-name "Cosmos DB Built-in Data Contributor" \
+  --principal-id $(az ad signed-in-user show --query id -o tsv) \
+  --scope "/"
+```
+
+### 2. Set the environment variable
+
+```bash
+# Linux / macOS
+export COSMOS_ENDPOINT="https://<your-account>.documents.azure.com:443/"
+
+# Windows (Command Prompt)
+set COSMOS_ENDPOINT=https://<your-account>.documents.azure.com:443/
+
+# Windows (PowerShell)
+$env:COSMOS_ENDPOINT = "https://<your-account>.documents.azure.com:443/"
+```
+
+### 3. Log in with Azure CLI (local development)
+
+```bash
+az login
+```
+
+`DefaultAzureCredential` automatically uses your Azure CLI login locally. In production (Azure App Service, Azure Functions, Azure Container Apps, etc.) it uses the managed identity assigned to the resource — no code changes needed.
+
+## Run
+
+```bash
+dotnet run
+```
+
+## What this sample does
+
+1. Reads the `COSMOS_ENDPOINT` environment variable
+2. Authenticates using `DefaultAzureCredential` (Azure CLI / Managed Identity / etc.)
+3. Creates (or retrieves) a database named `cosmicworks`
+4. Creates (or retrieves) a container named `products` with partition key `/category`
+5. Creates a product item
+6. Reads the item back and prints its details
