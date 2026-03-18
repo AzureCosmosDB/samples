@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/data/azcosmos"
 )
 
@@ -122,5 +124,6 @@ func main() {
 }
 
 func isConflict(err error) bool {
-	return azcosmos.IsErrorCode(err, http.StatusConflict)
+	var responseErr *azcore.ResponseError
+	return errors.As(err, &responseErr) && responseErr.StatusCode == http.StatusConflict
 }

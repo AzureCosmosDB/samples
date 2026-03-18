@@ -118,13 +118,22 @@ jobs:
     - name: Set up .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '9.0'
+        dotnet-version: |
+          9.0
+          10.0
     - name: Build
       run: |
         [ -d dotnet ] || exit 0
         for sample in dotnet/*/; do
           proj=$(find "$sample" -maxdepth 2 \( -name '*.sln' -o -name '*.csproj' \) | head -1)
-          [ -n "$proj" ] && dotnet build "$proj" --configuration Release -q
+          if [ -n "$proj" ]; then
+            dotnet build "$proj" --configuration Release -q
+          else
+            cs=$(find "$sample" -maxdepth 1 -name '*.cs' | head -1)
+            if [ -n "$cs" ]; then
+              dotnet publish "$cs" -o /tmp/dotnet-publish-output -q
+            fi
+          fi
         done
 
   validate-go:
