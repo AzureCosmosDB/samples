@@ -30,7 +30,7 @@ jobs:
               echo "::error::$name does not follow NNN-kebab-case naming"
               exit 1
             fi
-            if ! find "${sample}" -maxdepth 1 -type f -iname "readme.md" -print -quit | grep -q .; then
+            if ! find "${sample}" -maxdepth 1 \( -type f -o -type l \) -iname "readme.md" -print -quit | grep -q .; then
               echo "::error::$name is missing a readme.md (case-insensitive)"
               exit 1
             fi
