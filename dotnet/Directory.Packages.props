@@ -5,8 +5,8 @@
     <CentralPackageFloatingVersionsEnabled>true</CentralPackageFloatingVersionsEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Azure.Identity" Version="1.13.2" />
-    <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.47.0" />
+    <PackageVersion Include="Azure.Identity" Version="1.*" />
+    <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.*" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.*" />
   </ItemGroup>
 </Project>
