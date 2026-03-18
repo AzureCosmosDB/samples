@@ -5,11 +5,15 @@ from azure.cosmos import CosmosClient, PartitionKey
 
 load_dotenv()
 
-connection_string = os.environ.get("COSMOS_CONNECTION_STRING")
-if not connection_string:
-    raise ValueError("COSMOS_CONNECTION_STRING environment variable is not set.")
+endpoint = os.environ.get("COSMOS_ENDPOINT")
+if not endpoint:
+    raise ValueError("COSMOS_ENDPOINT environment variable is not set.")
 
-client = CosmosClient.from_connection_string(connection_string)
+key = os.environ.get("COSMOS_KEY")
+if not key:
+    raise ValueError("COSMOS_KEY environment variable is not set.")
+
+client = CosmosClient(url=endpoint, credential=key)
 
 database = client.create_database_if_not_exists("cosmicworks")
 print(f"Created/retrieved database: {database.id}")
