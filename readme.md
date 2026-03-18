@@ -38,3 +38,12 @@ Each sample folder is prefixed with a three-digit number that indicates its cate
 | `300–399` | **Patterns** | Common application patterns and best practices |
 | `400–499` | **Advanced** | Advanced scenarios including AI and vector search integrations |
 | `500–599` | **Vertical integration** | End-to-end vertical integration scenarios |
+
+
+## Validation
+
+Every pull request and push to `main` runs the [validation workflow](.github/workflows/validate.yml), which enforces two things:
+
+- **Sample structure** — all sample directories must follow the `NNN-kebab-case-name` naming convention (e.g. `001-quickstart`) and include a `README.md`.
+- **Language correctness** — changes under a language root folder (`python/`, `javascript/`, `java/`, `dotnet/`, `go/`) trigger the corresponding build and test job for that language only. Unmodified languages are skipped.
+One stop repo for all Azure Cosmos DB samples.

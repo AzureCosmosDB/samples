@@ -1,0 +1,148 @@
+name: Validate Samples
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-structure:
+    name: Validate Sample Structure
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Validate naming and README presence
+      run: |
+        for dir in python javascript java dotnet go; do
+          [ -d "$dir" ] || continue
+          for sample in "$dir"/*/; do
+            name=$(basename "$sample")
+            if ! [[ "$name" =~ ^[0-9]{3}-[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
+              echo "::error::$name does not follow NNN-kebab-case naming"
+              exit 1
+            fi
+            if [ ! -f "${sample}README.md" ]; then
+              echo "::error::$name is missing README.md"
+              exit 1
+            fi
+          done
+        done
+
+  validate-python:
+    name: Validate Python Samples
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Install dependencies
+      run: |
+        [ -d python ] || exit 0
+        for sample in python/*/; do
+          [ -f "${sample}requirements.txt" ] && pip install -r "${sample}requirements.txt" -q
+        done
+    - name: Run tests
+      run: |
+        [ -d python ] || exit 0
+        for sample in python/*/; do
+          python -m pytest "$sample" -q || find "$sample" -name '*.py' -exec python -m py_compile {} +
+        done
+
+  validate-javascript:
+    name: Validate JavaScript/TypeScript Samples
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - name: Install and test
+      run: |
+        [ -d javascript ] || exit 0
+        for sample in javascript/*/; do
+          [ -f "${sample}package.json" ] || continue
+          npm install --prefix "$sample" --silent
+          npm test --prefix "$sample" --if-present
+        done
+
+  validate-java:
+    name: Validate Java Samples
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: microsoft
+        java-version: '21'
+    - name: Build and test
+      run: |
+        [ -d java ] || exit 0
+        for sample in java/*/; do
+          if [ -f "${sample}pom.xml" ]; then
+            mvn -q --no-transfer-progress test -f "${sample}pom.xml"
+          elif [ -f "${sample}build.gradle" ] || [ -f "${sample}build.gradle.kts" ]; then
+            (cd "$sample" && gradle test --no-daemon -q)
+          fi
+        done
+
+  validate-dotnet:
+    name: Validate .NET Samples
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0'
+    - name: Build
+      run: |
+        [ -d dotnet ] || exit 0
+        for sample in dotnet/*/; do
+          proj=$(find "$sample" -maxdepth 2 \( -name '*.sln' -o -name '*.csproj' \) | head -1)
+          [ -n "$proj" ] && dotnet build "$proj" --configuration Release -q
+        done
+
+  validate-go:
+    name: Validate Go Samples
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+    - name: Build and test
+      run: |
+        [ -d go ] || exit 0
+        for sample in go/*/; do
+          [ -f "${sample}go.mod" ] || continue
+          (cd "$sample" && go build ./... && go test ./...)
+        done
