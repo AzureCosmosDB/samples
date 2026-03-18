@@ -1,5 +1,6 @@
 #:package Azure.Identity
 #:package Microsoft.Azure.Cosmos
+#:package Newtonsoft.Json
 #:package Microsoft.Extensions.Configuration.UserSecrets
 
 using Azure.Identity;
@@ -11,7 +12,7 @@ IConfigurationRoot configuration = new ConfigurationBuilder()
     .Build();
 
 string endpoint = configuration["COSMOS_ENDPOINT"]
-    ?? throw new InvalidOperationException("COSMOS_ENDPOINT is not configured. Run: dotnet user-secrets set --file Program.cs \"COSMOS_ENDPOINT\" \"<your-endpoint>\"");
+    ?? throw new InvalidOperationException("COSMOS_ENDPOINT is not configured. Run: dotnet user-secrets set --file connect.cs \"COSMOS_ENDPOINT\" \"<your-endpoint>\"");
 
 var credential = new DefaultAzureCredential();
 var client = new CosmosClient(endpoint, credential);
