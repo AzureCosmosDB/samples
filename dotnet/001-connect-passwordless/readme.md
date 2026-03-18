@@ -26,22 +26,21 @@ az cosmosdb sql role assignment create \
 
 ## Run
 
-> [!IMPORTANT]
-> The environment variable below is set **only for the current terminal session** and does **not persist** after you close the window.
+### 1. Set your endpoint using user secrets
 
-### macOS / Linux
-
-```bash
-export COSMOS_ENDPOINT="https://<your-account>.documents.azure.com:443/"
-az login
-dotnet run Program.cs
+```shell
+dotnet user-secrets set --file Program.cs "COSMOS_ENDPOINT" "https://<your-account>.documents.azure.com:443/"
 ```
 
-### Windows (PowerShell)
+### 2. Log in with Azure CLI
 
-```powershell
-$Env:COSMOS_ENDPOINT="https://<your-account>.documents.azure.com:443/"
+```shell
 az login
+```
+
+### 3. Run the sample
+
+```shell
 dotnet run Program.cs
 ```
 
@@ -49,7 +48,7 @@ dotnet run Program.cs
 
 ## What this sample does
 
-1. Reads the `COSMOS_ENDPOINT` environment variable
+1. Reads `COSMOS_ENDPOINT` from user secrets (via `Microsoft.Extensions.Configuration.UserSecrets`)
 2. Authenticates using `DefaultAzureCredential` (Azure CLI / Managed Identity / etc.)
 3. Creates (or retrieves) a database named `cosmicworks`
 4. Creates (or retrieves) a container named `products` with partition key `/category`
