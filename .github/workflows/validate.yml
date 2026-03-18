@@ -30,7 +30,7 @@ jobs:
               echo "::error::$name does not follow NNN-kebab-case naming"
               exit 1
             fi
-            if ! find "${sample}" -maxdepth 1 -iname "readme.md" -print -quit | grep -q .; then
+            if ! find "${sample}" -maxdepth 1 -type f -iname "readme.md" -print -quit | grep -q .; then
               echo "::error::$name is missing a readme.md (case-insensitive)"
               exit 1
             fi
@@ -118,7 +118,8 @@ jobs:
     - name: Set up .NET
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: '9.0'
+        dotnet-version: |
+          10.0
     - name: Build
       run: |
         [ -d dotnet ] || exit 0
