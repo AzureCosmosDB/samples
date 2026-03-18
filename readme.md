@@ -15,15 +15,15 @@ Samples are organized by programming language at the root level. Each project is
 ├── dotnet/
 │   ├── 001-connect-passwordless/
 │   ├── 101-create-item/
-│   └── 201-query-items/
+│   └── 102-query-items/
 ├── python/
 │   ├── 002-connect-connection-string/
 │   ├── 101-create-item/
-│   └── 201-query-items/
+│   └── 102-query-items/
 └── go/
     ├── 002-connect-connection-string/
     ├── 101-create-item/
-    └── 201-query-items/
+    └── 201-change-feed/
 ```
 
 ## Numbering standard
@@ -33,7 +33,7 @@ Each sample folder is prefixed with a three-digit number that indicates its cate
 | Range | Category | Description |
 | --- | --- | --- |
 | `000–099` | **Connectivity** | Basic connectivity, authentication, and client configuration |
-| `100–199` | **Hello world** | Hello-world style scenarios to get started quickly |
+| `100–199` | **Quickstart** | Hello-world style scenarios to get started quickly |
 | `200–299` | **Feature usage** | Using specific Azure Cosmos DB features such as change feed or bulk operations |
 | `300–399` | **Patterns** | Common application patterns and best practices |
 | `400–499` | **Advanced** | Advanced scenarios including AI and vector search integrations |
