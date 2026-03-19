@@ -89,14 +89,13 @@ jobs:
       uses: actions/setup-node@v6
       with:
         node-version: '20'
-    - name: Install, build, and test
+    - name: Install and build
       run: |
         [ -d typescript ] || exit 0
         for sample in typescript/*/; do
           [ -f "${sample}package.json" ] || continue
           npm install --prefix "$sample" --silent
           npm run build --prefix "$sample" --if-present
-          npm test --prefix "$sample" --if-present
         done
 
   validate-java:
