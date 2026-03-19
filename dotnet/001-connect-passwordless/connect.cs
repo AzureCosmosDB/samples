@@ -1,4 +1,4 @@
-#:package Azure.Identity
+#:package Azure.Identity@1.*
 #:package Microsoft.Azure.Cosmos
 #:package Newtonsoft.Json
 #:package Microsoft.Extensions.Configuration.UserSecrets
