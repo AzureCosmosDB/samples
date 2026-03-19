@@ -1,7 +1,4 @@
 #:package Azure.Identity
-#:package Microsoft.Azure.Cosmos
-#:package Newtonsoft.Json
-#:package Microsoft.Extensions.Configuration.UserSecrets
 
 using Azure.Identity;
 using Microsoft.Azure.Cosmos;
