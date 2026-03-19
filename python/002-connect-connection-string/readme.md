@@ -35,7 +35,4 @@ You can find your endpoint and primary key in the Azure portal under your Cosmos
 
 1. Reads `COSMOS_ENDPOINT` and `COSMOS_KEY` from the environment
 2. Creates a `CosmosClient` using the endpoint and key
-3. Creates (or retrieves) a database named `cosmicworks`
-4. Creates (or retrieves) a container named `products` with partition key `/category`
-5. Creates a product item
-6. Queries items filtered by category and prints the results
+3. Reads account metadata and prints the account name
