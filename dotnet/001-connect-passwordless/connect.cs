@@ -12,7 +12,7 @@ string endpoint = configuration["COSMOS_ENDPOINT"]
     ?? throw new InvalidOperationException("COSMOS_ENDPOINT is not configured. Run: dotnet user-secrets set --file connect.cs \"COSMOS_ENDPOINT\" \"<your-endpoint>\"");
 
 var credential = new DefaultAzureCredential();
-var client = new CosmosClient(endpoint, credential);
+using var client = new CosmosClient(endpoint, credential);
 
 AccountProperties account = await client.ReadAccountAsync();
 Console.WriteLine($"Account: {account.Id}");
