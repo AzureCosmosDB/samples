@@ -1,5 +1,3 @@
-#:package Microsoft.Azure.Cosmos
-#:package Microsoft.Extensions.Configuration.UserSecrets
 #:package Newtonsoft.Json
 
 using Microsoft.Azure.Cosmos;
