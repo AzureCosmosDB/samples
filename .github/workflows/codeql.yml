@@ -1,0 +1,95 @@
+name: CodeQL
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  schedule:
+    - cron: '30 4 * * 2'
+  workflow_dispatch:
+
+jobs:
+  analyze-python:
+    name: Analyze (python)
+    if: github.repository == 'AzureCosmosDB/samples'
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+          build-mode: none
+          queries: security-and-quality
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:python"
+
+  analyze-csharp:
+    name: Analyze (csharp)
+    if: github.repository == 'AzureCosmosDB/samples'
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: csharp
+          build-mode: manual
+          queries: security-and-quality
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0'
+      - name: Build .NET samples
+        run: |
+          set -e
+          projs=$(find dotnet -name '*.csproj' 2>/dev/null)
+          if [ -z "$projs" ]; then
+            echo "::warning::No .csproj files found in dotnet/. Skipping C# build for CodeQL."
+            exit 0
+          fi
+          echo "$projs" | while IFS= read -r proj; do
+            dotnet build "$proj" --configuration Release
+          done
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:csharp"
+
+  analyze-go:
+    name: Analyze (go)
+    if: github.repository == 'AzureCosmosDB/samples'
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: go
+          build-mode: autobuild
+          queries: security-and-quality
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:go"
