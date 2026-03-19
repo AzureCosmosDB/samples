@@ -1,0 +1,18 @@
+{
+  "name": "cosmos-typescript-change-feed",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "start": "npx ts-node src/index.ts",
+    "test": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@azure/cosmos": "^4.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}
