@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <UserSecretsId>azurecosmosdb-samples-dotnet</UserSecretsId>
+  </PropertyGroup>
+</Project>
