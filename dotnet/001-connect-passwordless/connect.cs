@@ -1,3 +1,7 @@
+#:package Azure.Identity
+#:package Microsoft.Azure.Cosmos
+#:package Newtonsoft.Json
+
 using Azure.Identity;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;

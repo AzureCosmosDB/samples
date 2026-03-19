@@ -3,9 +3,6 @@
     <UserSecretsId>azurecosmosdb-samples-dotnet</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" />
-    <PackageReference Include="Microsoft.Azure.Cosmos" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
-    <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
 </Project>
