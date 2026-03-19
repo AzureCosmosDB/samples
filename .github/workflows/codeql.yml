@@ -16,7 +16,6 @@ concurrency:
 jobs:
   analyze-python:
     name: Analyze Python Samples
-    if: github.repository == 'AzureCosmosDB/samples'
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -33,13 +32,13 @@ jobs:
           build-mode: none
           queries: security-and-quality
       - name: Perform CodeQL Analysis
+        if: github.repository == 'AzureCosmosDB/samples'
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:python"
 
   analyze-javascript:
     name: Analyze JavaScript/TypeScript Samples
-    if: github.repository == 'AzureCosmosDB/samples'
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -56,13 +55,13 @@ jobs:
           build-mode: none
           queries: security-and-quality
       - name: Perform CodeQL Analysis
+        if: github.repository == 'AzureCosmosDB/samples'
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:javascript-typescript"
 
   analyze-dotnet:
     name: Analyze .NET Samples
-    if: github.repository == 'AzureCosmosDB/samples'
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -79,13 +78,13 @@ jobs:
           build-mode: none
           queries: security-and-quality
       - name: Perform CodeQL Analysis
+        if: github.repository == 'AzureCosmosDB/samples'
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:csharp"
 
   analyze-go:
     name: Analyze Go Samples
-    if: github.repository == 'AzureCosmosDB/samples'
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -102,6 +101,7 @@ jobs:
           build-mode: autobuild
           queries: security-and-quality
       - name: Perform CodeQL Analysis
+        if: github.repository == 'AzureCosmosDB/samples'
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:go"
