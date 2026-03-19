@@ -54,11 +54,11 @@ for (const product of products) {
   console.log(`Upserted item:\t${product.id}`);
 }
 
-// Read the change feed from the beginning of the container's history
+// Read the change feed starting from now to avoid replaying the full history on reruns
 console.log("\nReading change feed...");
 
 const iterator = container.items.getChangeFeedIterator<Product>({
-  changeFeedStartFrom: ChangeFeedStartFrom.Beginning(),
+  changeFeedStartFrom: ChangeFeedStartFrom.Now(),
 });
 
 while (iterator.hasMoreResults) {
