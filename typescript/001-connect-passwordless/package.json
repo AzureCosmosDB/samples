@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@azure/cosmos": "4.9.2",
-    "@azure/identity": "4.13.0"
+    "@azure/identity": "4.13.1"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",
